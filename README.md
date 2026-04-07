@@ -5,6 +5,9 @@
 *Sergey V. Shpital*
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19452600.svg)](https://doi.org/10.5281/zenodo.19452600)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+<!-- [![arXiv](https://img.shields.io/badge/arXiv-Pending-b31b1b.svg)](https://arxiv.org/abs/XXXX.XXXXX) -->
 
 ## Overview
 
@@ -91,6 +94,10 @@ Runs an isolated PyTorch `gradcheck` in `float64` to verify the differentiabilit
 ```bash
 python src/spectralnet/cli/run_gradcheck.py
 ```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
 
 ## Citation
 
