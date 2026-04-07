@@ -1,0 +1,48 @@
+# @package _global_
+# Experiment C.2 — Activation ablation: PhysicalAct vs GELU vs ReLU
+# Single seed, epochs=50, CIFAR-10 full train
+# Based on canonical EXP-005 config (modes=8, channels=64, n_steps=4)
+
+experiment:
+  name: "C2_activation_ablation"
+  seed: 42
+  device: "cuda"
+
+dataset:
+  name: "cifar10"
+  root: "./data"
+  num_workers: 4
+  batch_size: 128
+  augmentation: true  # standard: RandomCrop(32, padding=4) + RandomHorizontalFlip
+
+model:
+  architecture: "SpectralNet-S"
+  layer_type: "spectral"
+  modes: 8
+  channels: 64
+  n_steps: 4
+  aggregation: "resolvent"
+  init_lambda: 1.5
+  # activation: injected per-run, see variants below
+
+training:
+  epochs: 50
+  optimizer: "AdamW"
+  lr: 0.001
+  weight_decay: 1.0e-4
+  scheduler: "cosine"
+  T_max: 50
+
+# Three variants — run sequentially or in parallel
+variants:
+  - name: "physicalact"
+    activation: "physicalact"   # x * exp(-|x|^2)
+  - name: "gelu"
+    activation: "gelu"
+  - name: "relu"
+    activation: "relu"
+
+logging:
+  save_dir: "./results/C2"
+  save_best: true
+  log_every: 10  # epochs

@@ -1,0 +1,11 @@
+name: standard_exp005
+dataset: cifar10
+batch_size: 128
+epochs: 100
+optimizer:
+  type: adamw
+  lr: 0.001
+  weight_decay: 0.0001
+scheduler:
+  type: cosine
+  T_max: 100

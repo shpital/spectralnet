@@ -1,0 +1,48 @@
+# @package _global_
+name: exp005_modes8_multiseed
+rq_unit: vision_benchmark
+version: "1.0"
+
+dataset:
+  name: cifar10
+  data_dir: ./data
+
+model:
+  name: SpectralNet-Small
+  channels: 64
+  head_hidden: 128
+  evolution:
+    layer_type: spectral
+    n_steps: 4
+    tau: 0.1
+  core:
+    spectral_modes: 8
+  aggregation:
+    type: resolvent
+    init_lambda: 1.5
+    trainable: true
+
+training:
+  seed: 42
+  epochs: 100
+  batch_size: 128
+  strict_audit: true
+  clip_grad: false
+  optimizer:
+    lr: 0.001
+    weight_decay: 0.0001
+  scheduler:
+    type: cosine
+    T_max: 100
+    eta_min: 1.0e-05
+
+infra:
+  save_dir: ./results/runs
+  num_workers: 4
+
+metadata:
+  author: S.V.Shpital
+  project: SpectralNet
+  experiment: EXP-005
+  branch: spectral
+  note: canonical baseline modes=8, epochs=100, paper_v2 Table 1

@@ -1,0 +1,20 @@
+# @package _global_
+name: "exp001_vision_cifar10"
+rq_unit: "vision_benchmark"  # Corresponds to the layer in the code
+version: "1.0"
+
+defaults:
+  - /dataset: cifar10
+  - /model: spectralnet_s
+  - /training: standard
+  - _self_
+
+infra:
+  save_dir: "./results/runs"
+  num_workers: 4
+
+# Metadata for Artifact Lineage
+metadata:
+  author: "S.V.Shpital"
+  project: "SpectralNet"
+  hardware_target: "GPU_Workstation_2026"

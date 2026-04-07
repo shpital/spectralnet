@@ -1,0 +1,8 @@
+torch>=2.0.0
+torchvision>=0.15.0
+hydra-core>=1.3.0
+omegaconf>=2.3.0
+
+# Optional dependencies for efficiency evaluation (MACs counting)
+ptflops>=0.7.1
+thop>=0.1.1

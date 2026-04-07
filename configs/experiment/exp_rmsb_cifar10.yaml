@@ -1,0 +1,86 @@
+# @package _global_
+# =============================================================================
+# Experiment: Resource-Matched Shift Baseline (RMSB-R1)
+#
+# Goal: test whether a shift-based model with matched representational capacity
+# can close the gap with the full spectral baseline.
+#
+# Architecture (R1: Shift + 1×1 Mixer + Residual):
+#   stem → [RemizovShiftLayer → BN → 1×1 expand → GELU → 1×1 project → residual] × N
+#         → resolvent_agg → GAP → MLP head
+#
+# Parameter budget (channels=128, n_blocks=4, expansion=16):
+#   Per block ≈ 525K  (shift 512 + BN 256 + mixer 2×128²×16 = 524K)
+#   4 blocks  ≈ 2.10M
+#   Stem      ≈ 3.7K
+#   Head      ≈ 35.3K
+#   Total     ≈ 2.14M  →  ~93% of spectral baseline (target: ±10%) ✓
+#
+# Spectral baseline reference (C.5, rank=4, shift_hidden=8):
+#   ≈ 2.30M params  |  CIFAR-10 best: ~79%+  (see run_c5_hybrid.sh results)
+#
+# Pure shift reference (layer_type=shift, same stem/head):
+#   ≈ 39.6K params  |  CIFAR-10 best: ~58.3%  (capacity-limited)
+#
+# Comparison matrix:
+#   A. spectral baseline  (rank4+shift_hidden=8, channels=128)  — reference
+#   B. pure_shift         (layer_type=shift,     channels=128)  — lower bound
+#   C. RMSB-R1            (layer_type=shift_rich, this config)  — matched budget
+#
+# Training recipe: identical to C.5 / run_c5_hybrid.sh for fair comparison.
+#   AdamW  lr=1e-3  wd=1e-4  cosine 100ep  batch=128  5 seeds
+# =============================================================================
+
+name: exp_rmsb_r1_cifar10
+rq_unit: vision_benchmark
+version: "1.0"
+
+dataset:
+  name: cifar10
+  data_dir: ./data
+
+model:
+  name: RMSB-R1
+  channels: 128
+  head_hidden: 256
+  activation: gelu
+  evolution:
+    layer_type: shift_rich   # uses nn.ModuleList of ShiftMixerBlocks
+    n_blocks: 4              # independent blocks; each carries own parameters
+    expansion: 16            # 1×1 mixer hidden = channels × expansion = 2048
+    n_steps: 4               # kept for ResolventAggregation init (aligned with n_blocks)
+    tau: 0.1
+  core:
+    spectral_modes: 8        # not used for shift_rich; kept for config compatibility
+  aggregation:
+    type: resolvent
+    init_lambda: 1.5
+    trainable: true
+
+training:
+  seed: 42
+  epochs: 100
+  batch_size: 128
+  strict_audit: true
+  clip_grad: false
+  optimizer:
+    lr: 0.001
+    weight_decay: 0.0001
+  scheduler:
+    type: cosine
+    T_max: 100
+    eta_min: 1.0e-05
+
+infra:
+  save_dir: ./results/rmsb
+  num_workers: 4
+
+metadata:
+  author: S.V.Shpital
+  project: SpectralNet
+  experiment: RMSB-R1
+  branch: shift_rich
+  note: >
+    Resource-Matched Shift Baseline. Shift-driven architecture with 1×1 channel
+    mixer capacity scaled to match spectral baseline parameter budget (~2.14M vs
+    ~2.30M). Multi-seed 5-run protocol; identical recipe to C.5 for fair comparison.

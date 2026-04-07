@@ -1,0 +1,39 @@
+# @package _global_
+name: exp_baseline_cifar10
+rq_unit: vision_benchmark
+version: "1.0"
+
+dataset:
+  name: cifar10
+  data_dir: ./data
+
+# baseline_type is set via override: model.baseline_type=resnet18
+model:
+  name: Baseline
+  baseline_type: resnet18
+  num_classes: 10
+
+training:
+  seed: 42
+  epochs: 100
+  batch_size: 128
+  strict_audit: false      # baseline models do not pass SpectralNet gradcheck
+  clip_grad: false
+  optimizer:
+    lr: 0.001
+    weight_decay: 0.0001
+  scheduler:
+    type: cosine
+    T_max: 100
+    eta_min: 1.0e-05
+
+infra:
+  save_dir: ./results/runs
+  num_workers: 4
+
+metadata:
+  author: S.V.Shpital
+  project: SpectralNet
+  experiment: EXP-006
+  branch: baseline
+  note: Line A baselines for paper_v2 Table 1

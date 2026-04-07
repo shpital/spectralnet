@@ -1,0 +1,9 @@
+name: spectralnet_s_modes8
+model:
+  type: spectral
+  channels: 64
+  n_steps: 4
+  modes: 8
+  init_lambda: 1.5
+  aggregation:
+    type: resolvent

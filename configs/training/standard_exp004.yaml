@@ -1,0 +1,18 @@
+# Training config for EXP-004.
+# seed is overridden from CLI: training.seed=42 / 123 / 777
+# Other parameters are fixed for reproducibility.
+
+seed: 42          # default; override via CLI: training.seed=123
+epochs: 50
+batch_size: 128
+strict_audit: true
+clip_grad: false  # for the spectral branch gradients are stable without clipping
+
+optimizer:
+  lr: 0.001
+  weight_decay: 0.0001
+
+scheduler:
+  type: "cosine"
+  T_max: 50
+  eta_min: 1.0e-5

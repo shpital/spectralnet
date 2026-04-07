@@ -1,0 +1,26 @@
+# Canonical SpectralNet-S config for EXP-004.
+# Corresponds to EXP-003 run (best val acc = 64.97% @ seed=42).
+# DO NOT edit without recording in Research State.
+
+name: "SpectralNet-Small"
+channels: 64
+head_hidden: 128
+
+evolution:
+  layer_type: "spectral"   # SpectralRemizovLayer (FFT-based), vision branch
+  n_steps: 4               # F_φ(τ)^n → T_φ(t), O(1/n) approx error
+  tau: 0.1                 # used only in ResolventAggregation
+
+core:
+  spectral_modes: 8       # M; ablation C.6: {8, 16, 32, 64}
+
+aggregation:
+  type: "resolvent"
+  init_lambda: 1.5         # λ > ||c||; softplus guarantees λ > 0
+  trainable: true
+
+# --- Shift-branch (PDE/operator track) — uncomment for Line D ---
+# evolution:
+#   layer_type: "shift"
+#   n_steps: 4
+#   tau: 0.02              # small step; theta_a init=-4.0 → a_0≈0.018
